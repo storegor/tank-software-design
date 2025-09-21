@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
+import static com.badlogic.gdx.Gdx.gl;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
@@ -23,8 +24,8 @@ public class GameDesktopLauncher implements ApplicationListener {
     @Override
     public void render() {
         // clear the screen
-        Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
-        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
+        gl.glClearColor(0f, 0f, 0.2f, 1f);
+        gl.glClear(GL_COLOR_BUFFER_BIT);
 
         // get time passed since the last render
         float deltaTime = Gdx.graphics.getDeltaTime();

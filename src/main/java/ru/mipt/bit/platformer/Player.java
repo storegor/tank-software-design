@@ -1,6 +1,5 @@
 package ru.mipt.bit.platformer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
@@ -12,6 +11,7 @@ import java.util.List;
 import static com.badlogic.gdx.Input.Keys.*;
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
+import static com.badlogic.gdx.Gdx.input;
 
 public class Player extends AbstractGameObject {
 
@@ -46,16 +46,16 @@ public class Player extends AbstractGameObject {
             GridPoint2 potentialDestination = null;
             float potentialRotation = rotation;
 
-            if (Gdx.input.isKeyPressed(UP) || Gdx.input.isKeyPressed(W)) {
+            if (input.isKeyPressed(UP) || input.isKeyPressed(W)) {
                 potentialDestination = incrementedY(coordinates);
                 potentialRotation = 90f;
-            } else if (Gdx.input.isKeyPressed(LEFT) || Gdx.input.isKeyPressed(A)) {
+            } else if (input.isKeyPressed(LEFT) || input.isKeyPressed(A)) {
                 potentialDestination = decrementedX(coordinates);
                 potentialRotation = -180f;
-            } else if (Gdx.input.isKeyPressed(DOWN) || Gdx.input.isKeyPressed(S)) {
+            } else if (input.isKeyPressed(DOWN) || input.isKeyPressed(S)) {
                 potentialDestination = decrementedY(coordinates);
                 potentialRotation = -90f;
-            } else if (Gdx.input.isKeyPressed(RIGHT) || Gdx.input.isKeyPressed(D)) {
+            } else if (input.isKeyPressed(RIGHT) || input.isKeyPressed(D)) {
                 potentialDestination = incrementedX(coordinates);
                 potentialRotation = 0f;
             }
