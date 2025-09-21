@@ -33,17 +33,20 @@ public final class GdxGameUtils {
         return mapRenderer;
     }
 
-    public static <L extends MapLayer> L getSingleLayer(Map map) {
+    public static <T extends MapLayer> T getSingleLayer(Map map) {
         MapLayers layers = map.getLayers();
         switch (layers.size()) {
-            case 0:
+            case 0: {
                 throw new NoSuchElementException("Map has no layers");
-            case 1:
+            }
+            case 1: {
                 @SuppressWarnings("unchecked")
-                L layer = (L) layers.iterator().next();
+                T layer = (T) layers.iterator().next();
                 return layer;
-            default:
+            }
+            default: {
                 throw new IllegalArgumentException("Map has more than one layer");
+            }
         }
     }
 
