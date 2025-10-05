@@ -1,33 +1,28 @@
 package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Rectangle;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.List;
 
-import static com.badlogic.gdx.Input.Keys.*;
-import static com.badlogic.gdx.math.MathUtils.isEqual;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
-import static com.badlogic.gdx.Gdx.input;
+public class Player implements GameObject {
 
-public class Player extends AbstractGameObject {
+    private final PlayerModel model;
+    private final PlayerGraphics graphics;
+    private final TiledMapTileLayer groundLayer; // Need this for TileMovement for graphics to know tile sizes
+    private final InputHandler inputHandler;
 
-    private static final float MOVEMENT_SPEED = 0.4f;
-
-    private final TileMovement tileMovement;
-    private GridPoint2 destinationCoordinates;
-    private float movementProgress = 1f;
-    private final CollisionDetector collisionDetector;
-    private List<? extends AbstractGameObject> currentCollidableObjects;
-
-    public Player(Texture texture, GridPoint2 initialCoordinates, TiledMapTileLayer groundLayer, Interpolation interpolation, CollisionDetector collisionDetector) {
-        super(texture, initialCoordinates);
-        this.destinationCoordinates = new GridPoint2(initialCoordinates);
-        this.tileMovement = new TileMovement(groundLayer, interpolation);
-        this.collisionDetector = collisionDetector;
+    public Player(Texture texture, GridPoint2 initialCoordinates, TiledMapTileLayer groundLayer, Interpolation interpolation, CollisionDetector collisionDetector, InputHandler inputHandler) {
+        this.groundLayer = groundLayer;
+        this.inputHandler = inputHandler;
+        TileMovement tileMovement = new TileMovement(groundLayer, interpolation);
+        this.model = new PlayerModel(initialCoordinates, collisionDetector, tileMovement);
+        this.graphics = new PlayerGraphics(texture, model.getCoordinates(), model.getRotation());
     }
 
     @Override
@@ -35,48 +30,31 @@ public class Player extends AbstractGameObject {
         throw new UnsupportedOperationException("Use update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) instead.");
     }
 
+    @Override
     public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) {
-        this.currentCollidableObjects = collidableObjects;
-        handleInput();
-        updateMovement(deltaTime);
+        Direction intendedDirection = inputHandler.getDirection();
+        inputHandler.resetDirection(); // Reset direction after processing
+
+        model.update(deltaTime, collidableObjects, intendedDirection);
+
+        // Update graphics based on model state
+        graphics.update(model.getCoordinates(), model.getRotation(), model.getDestinationCoordinates(), model.getMovementProgress(), model.getTileMovement(), groundLayer);
     }
 
-    private void handleInput() {
-        if (isEqual(movementProgress, 1f)) {
-            GridPoint2 potentialDestination = null;
-            float potentialRotation = rotation;
-
-            if (input.isKeyPressed(UP) || input.isKeyPressed(W)) {
-                potentialDestination = incrementedY(coordinates);
-                potentialRotation = 90f;
-            } else if (input.isKeyPressed(LEFT) || input.isKeyPressed(A)) {
-                potentialDestination = decrementedX(coordinates);
-                potentialRotation = -180f;
-            } else if (input.isKeyPressed(DOWN) || input.isKeyPressed(S)) {
-                potentialDestination = decrementedY(coordinates);
-                potentialRotation = -90f;
-            } else if (input.isKeyPressed(RIGHT) || input.isKeyPressed(D)) {
-                potentialDestination = incrementedX(coordinates);
-                potentialRotation = 0f;
-            }
-
-            if (potentialDestination != null && !isColliding(potentialDestination)) {
-                destinationCoordinates.set(potentialDestination);
-                rotation = potentialRotation;
-                movementProgress = 0f;
-            }
-        }
+    @Override
+    public void render(Batch batch) {
+        graphics.render(batch);
     }
 
-    private void updateMovement(float deltaTime) {
-        tileMovement.moveRectangleBetweenTileCenters(rectangle, coordinates, destinationCoordinates, movementProgress);
-        movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
-        if (isEqual(movementProgress, 1f)) {
-            coordinates.set(destinationCoordinates);
-        }
+    public GridPoint2 getCoordinates() {
+        return model.getCoordinates();
     }
 
-    private boolean isColliding(GridPoint2 targetCoordinates) {
-        return collisionDetector.isColliding(targetCoordinates, currentCollidableObjects);
+    public Rectangle getRectangle() {
+        return graphics.getRectangle();
     }
-} 
+
+    public void dispose() {
+        graphics.dispose();
+    }
+}

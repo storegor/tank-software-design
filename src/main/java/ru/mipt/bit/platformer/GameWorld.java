@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapRenderer;
@@ -27,6 +28,7 @@ public class GameWorld implements Disposable {
     private final Obstacle treeObstacle;
     private final List<Obstacle> obstacles;
     private final CollisionDetector collisionDetector;
+    private final KeyboardInputHandler inputHandler;
 
     public GameWorld(Batch batch) {
         // Load level tiles
@@ -38,6 +40,7 @@ public class GameWorld implements Disposable {
         gameObjects = new ArrayList<>();
         obstacles = new ArrayList<>();
         collisionDetector = new TileCollisionDetector();
+        inputHandler = new KeyboardInputHandler();
 
         Texture greenTreeTexture = new Texture("images/greenTree.png");
         treeObstacle = new Obstacle(greenTreeTexture, new GridPoint2(1, 3));
@@ -46,8 +49,10 @@ public class GameWorld implements Disposable {
         gameObjects.add(treeObstacle);
 
         Texture blueTankTexture = new Texture("images/tank_blue.png");
-        player = new Player(blueTankTexture, new GridPoint2(1, 1), groundLayer, Interpolation.smooth, collisionDetector);
+        player = new Player(blueTankTexture, new GridPoint2(1, 1), groundLayer, Interpolation.smooth, collisionDetector, inputHandler);
         gameObjects.add(player);
+
+        Gdx.input.setInputProcessor(inputHandler);
     }
 
     public void update(float deltaTime) {
