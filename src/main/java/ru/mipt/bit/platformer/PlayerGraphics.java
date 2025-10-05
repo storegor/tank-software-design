@@ -29,12 +29,12 @@ public class PlayerGraphics extends AbstractGameObject {
 
     @Override
     public void update(float deltaTime) {
-        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Player. Используйте update(GridPoint2, float, GridPoint2, float) вместо этого.");
+        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Obstacle.");
     }
 
     @Override
-    public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) {
-        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Player. Используйте update(GridPoint2, float, GridPoint2, float) вместо этого.");
+    public void update(float deltaTime, List<? extends GameObject> collidableObjects) {
+        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Player.");
     }
 
     public Rectangle getRectangle() {

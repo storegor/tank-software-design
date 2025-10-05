@@ -6,8 +6,8 @@ import java.util.List;
 
 public class TileCollisionDetector implements CollisionDetector {
     @Override
-    public boolean isColliding(GridPoint2 targetCoordinates, List<? extends AbstractGameObject> collidableObjects) {
-        for (AbstractGameObject object : collidableObjects) {
+    public boolean isColliding(GridPoint2 targetCoordinates, List<? extends GameObject> collidableObjects) {
+        for (GameObject object : collidableObjects) {
             if (object.getCoordinates().equals(targetCoordinates)) {
                 return true;
             }

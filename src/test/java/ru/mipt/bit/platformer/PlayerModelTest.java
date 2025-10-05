@@ -53,7 +53,7 @@ public class PlayerModelTest {
     void testMovementWithCollision() {
         when(mockCollisionDetector.isColliding(any(), any())).thenReturn(true);
         playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        assertEquals(new GridPoint2(0, 0), playerModel.getCoordinates()); // Не должен двигаться из-за столкновения
+        assertEquals(new GridPoint2(0, 0), playerModel.getCoordinates());
         assertEquals(0f, playerModel.getRotation());
     }
 
@@ -69,9 +69,8 @@ public class PlayerModelTest {
     void testMovementProgressUpdate() {
         when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
         playerModel.update(0.1f, Collections.emptyList(), Direction.UP);
-        assertEquals(0f, playerModel.getMovementProgress()); // Должен сброситься до 0 в начале движения
-        playerModel.update(0.1f, Collections.emptyList(), null); // Имитация одного шага движения
-        // Точное значение зависит от MOVEMENT_SPEED, но оно должно быть > 0 и < 1
+        assertEquals(0f, playerModel.getMovementProgress());
+        playerModel.update(0.1f, Collections.emptyList(), null);
         assertTrue(playerModel.getMovementProgress() > 0f && playerModel.getMovementProgress() < 1f);
     }
 
@@ -79,7 +78,6 @@ public class PlayerModelTest {
     void testDestinationReached() {
         when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
         playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        // Имитация полного прогресса движения
         for (int i = 0; i < 4; i++) {
             playerModel.update(0.1f, Collections.emptyList(), null);
         }

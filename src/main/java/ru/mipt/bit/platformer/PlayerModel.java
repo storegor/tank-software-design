@@ -17,7 +17,7 @@ public class PlayerModel {
     private GridPoint2 destinationCoordinates;
     private float movementProgress = 1f;
     private final CollisionDetector collisionDetector;
-    private List<? extends AbstractGameObject> currentCollidableObjects;
+    private List<? extends GameObject> currentCollidableObjects;
     private float rotation;
 
     public PlayerModel(GridPoint2 initialCoordinates, CollisionDetector collisionDetector, TileMovement tileMovement) {
@@ -28,7 +28,7 @@ public class PlayerModel {
         this.rotation = 0f;
     }
 
-    public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects, Direction intendedDirection) {
+    public void update(float deltaTime, List<? extends GameObject> collidableObjects, Direction intendedDirection) {
         this.currentCollidableObjects = collidableObjects;
 
         if (isEqual(movementProgress, 1f) && intendedDirection != null) {

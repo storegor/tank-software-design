@@ -27,11 +27,11 @@ public class Player implements GameObject {
 
     @Override
     public void update(float deltaTime) {
-        throw new UnsupportedOperationException("Метод update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) должен быть использован вместо этого.");
+        throw new UnsupportedOperationException("Метод update(float deltaTime, List<? extends GameObject> collidableObjects) должен быть использован вместо этого.");
     }
 
     @Override
-    public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) {
+    public void update(float deltaTime, List<? extends GameObject> collidableObjects) {
         Direction intendedDirection = inputHandler.getDirection();
         inputHandler.resetDirection(); 
 

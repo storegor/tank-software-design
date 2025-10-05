@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.moveRectangleAtTileCenter;
 
 public class GameWorld implements Disposable {
     private final TiledMap level;
@@ -43,8 +42,7 @@ public class GameWorld implements Disposable {
         inputHandler = new KeyboardInputHandler();
 
         Texture greenTreeTexture = new Texture("images/greenTree.png");
-        treeObstacle = new Obstacle(greenTreeTexture, new GridPoint2(1, 3));
-        moveRectangleAtTileCenter(groundLayer, treeObstacle.getRectangle(), treeObstacle.getCoordinates());
+        treeObstacle = new Obstacle(greenTreeTexture, new GridPoint2(1, 3), groundLayer);
         obstacles.add(treeObstacle);
         gameObjects.add(treeObstacle);
 
@@ -56,14 +54,9 @@ public class GameWorld implements Disposable {
     }
 
     public void update(float deltaTime) {
-        List<AbstractGameObject> collidableObjects = getCollidableObjects();
+        List<? extends GameObject> collidableObjects = getCollidableObjects();
         for (GameObject object : gameObjects) {
-            // Если объект является игроком, передаем объекты для обнаружения столкновений
-            if (object instanceof Player) {
-                ((Player) object).update(deltaTime, collidableObjects);
-            } else {
-                object.update(deltaTime);
-            }
+            object.update(deltaTime, collidableObjects);
         }
     }
 
@@ -80,8 +73,9 @@ public class GameWorld implements Disposable {
         return player;
     }
 
-    private List<AbstractGameObject> getCollidableObjects() {
-        return obstacles.stream().map(o -> (AbstractGameObject) o).collect(Collectors.toList());
+    private List<? extends GameObject> getCollidableObjects() {
+        List<GameObject> allCollidable = new ArrayList<>(obstacles);
+        return allCollidable;
     }
 
     @Override
@@ -90,6 +84,10 @@ public class GameWorld implements Disposable {
         for (GameObject object : gameObjects) {
             if (object instanceof AbstractGameObject) {
                 ((AbstractGameObject) object).dispose();
+            } else if (object instanceof Obstacle) {
+                ((Obstacle) object).dispose();
+            } else if (object instanceof Player) {
+                ((Player) object).dispose();
             }
         }
     }

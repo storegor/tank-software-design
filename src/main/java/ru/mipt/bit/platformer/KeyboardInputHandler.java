@@ -32,7 +32,6 @@ public class KeyboardInputHandler implements InputHandler {
 
     @Override
     public boolean keyUp(int keycode) {
-        // Reset direction only if the released key was the one setting the current direction
         if ((keycode == Keys.UP || keycode == Keys.W) && currentDirection == Direction.UP) {
             currentDirection = null;
         } else if ((keycode == Keys.LEFT || keycode == Keys.A) && currentDirection == Direction.LEFT) {
@@ -69,8 +68,6 @@ public class KeyboardInputHandler implements InputHandler {
     public boolean mouseMoved(int screenX, int screenY) {
         return false;
     }
-
-    // Removed @Override and scrolled(float amountX, float amountY)
 
     @Override
     public boolean scrolled(int amount) {
