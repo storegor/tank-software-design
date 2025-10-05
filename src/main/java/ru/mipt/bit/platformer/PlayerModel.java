@@ -44,7 +44,6 @@ public class PlayerModel {
     }
 
     private void updateMovement(float deltaTime) {
-        tileMovement.moveRectangleBetweenTileCenters(null, coordinates, destinationCoordinates, movementProgress); // rectangle is now passed from PlayerGraphics
         movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
         if (isEqual(movementProgress, 1f)) {
             coordinates.set(destinationCoordinates);

@@ -31,12 +31,12 @@ public class GameWorld implements Disposable {
     private final KeyboardInputHandler inputHandler;
 
     public GameWorld(Batch batch) {
-        // Load level tiles
+        // Загрузка тайлов уровня
         level = new TmxMapLoader().load("level.tmx");
         levelRenderer = createSingleLayerMapRenderer(level, batch);
         groundLayer = getSingleLayer(level);
 
-        // Initialize game objects
+        // Инициализация игровых объектов
         gameObjects = new ArrayList<>();
         obstacles = new ArrayList<>();
         collisionDetector = new TileCollisionDetector();
@@ -58,7 +58,7 @@ public class GameWorld implements Disposable {
     public void update(float deltaTime) {
         List<AbstractGameObject> collidableObjects = getCollidableObjects();
         for (GameObject object : gameObjects) {
-            // If the object is a Player, pass the collidable objects for collision detection
+            // Если объект является игроком, передаем объекты для обнаружения столкновений
             if (object instanceof Player) {
                 ((Player) object).update(deltaTime, collidableObjects);
             } else {

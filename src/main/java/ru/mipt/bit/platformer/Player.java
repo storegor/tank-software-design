@@ -14,7 +14,7 @@ public class Player implements GameObject {
 
     private final PlayerModel model;
     private final PlayerGraphics graphics;
-    private final TiledMapTileLayer groundLayer; // Need this for TileMovement for graphics to know tile sizes
+    private final TiledMapTileLayer groundLayer; 
     private final InputHandler inputHandler;
 
     public Player(Texture texture, GridPoint2 initialCoordinates, TiledMapTileLayer groundLayer, Interpolation interpolation, CollisionDetector collisionDetector, InputHandler inputHandler) {
@@ -22,23 +22,22 @@ public class Player implements GameObject {
         this.inputHandler = inputHandler;
         TileMovement tileMovement = new TileMovement(groundLayer, interpolation);
         this.model = new PlayerModel(initialCoordinates, collisionDetector, tileMovement);
-        this.graphics = new PlayerGraphics(texture, model.getCoordinates(), model.getRotation());
+        this.graphics = new PlayerGraphics(texture, model.getCoordinates(), model.getRotation(), groundLayer, interpolation);
     }
 
     @Override
     public void update(float deltaTime) {
-        throw new UnsupportedOperationException("Use update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) instead.");
+        throw new UnsupportedOperationException("Метод update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) должен быть использован вместо этого.");
     }
 
     @Override
     public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) {
         Direction intendedDirection = inputHandler.getDirection();
-        inputHandler.resetDirection(); // Reset direction after processing
+        inputHandler.resetDirection(); 
 
         model.update(deltaTime, collidableObjects, intendedDirection);
 
-        // Update graphics based on model state
-        graphics.update(model.getCoordinates(), model.getRotation(), model.getDestinationCoordinates(), model.getMovementProgress(), model.getTileMovement(), groundLayer);
+        graphics.update(model.getCoordinates(), model.getRotation(), model.getDestinationCoordinates(), model.getMovementProgress());
     }
 
     @Override

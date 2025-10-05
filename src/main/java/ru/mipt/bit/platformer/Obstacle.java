@@ -12,11 +12,11 @@ public class Obstacle extends AbstractGameObject {
 
     @Override
     public void update(float deltaTime) {
-        // Obstacles don't have update logic for now
+        // Препятствия пока не имеют логики обновления
     }
 
     @Override
     public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) {
-        // Obstacles don't have update logic related to collidable objects for now
+        // Препятствия пока не имеют логики обновления, связанной с другими объектами для столкновений
     }
 } 

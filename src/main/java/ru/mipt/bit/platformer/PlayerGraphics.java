@@ -3,6 +3,7 @@ package ru.mipt.bit.platformer;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import ru.mipt.bit.platformer.util.TileMovement;
 
@@ -10,12 +11,17 @@ import java.util.List;
 
 public class PlayerGraphics extends AbstractGameObject {
 
-    public PlayerGraphics(Texture texture, GridPoint2 initialCoordinates, float initialRotation) {
+    private final TiledMapTileLayer groundLayer;
+    private final TileMovement tileMovement;
+
+    public PlayerGraphics(Texture texture, GridPoint2 initialCoordinates, float initialRotation, TiledMapTileLayer groundLayer, Interpolation interpolation) {
         super(texture, initialCoordinates);
         this.rotation = initialRotation;
+        this.groundLayer = groundLayer;
+        this.tileMovement = new TileMovement(groundLayer, interpolation);
     }
 
-    public void update(GridPoint2 currentCoordinates, float currentRotation, GridPoint2 destinationCoordinates, float movementProgress, TileMovement tileMovement, TiledMapTileLayer groundLayer) {
+    public void update(GridPoint2 currentCoordinates, float currentRotation, GridPoint2 destinationCoordinates, float movementProgress) {
         this.coordinates.set(currentCoordinates);
         this.rotation = currentRotation;
         tileMovement.moveRectangleBetweenTileCenters(rectangle, this.coordinates, destinationCoordinates, movementProgress);
@@ -23,14 +29,12 @@ public class PlayerGraphics extends AbstractGameObject {
 
     @Override
     public void update(float deltaTime) {
-        // This method is not used as PlayerGraphics is updated by Player composite
-        throw new UnsupportedOperationException("PlayerGraphics is updated by Player composite. Use update(GridPoint2, float, GridPoint2, float, TileMovement, TiledMapTileLayer) instead.");
+        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Player. Используйте update(GridPoint2, float, GridPoint2, float) вместо этого.");
     }
 
     @Override
     public void update(float deltaTime, List<? extends AbstractGameObject> collidableObjects) {
-        // This method is not used as PlayerGraphics is updated by Player composite
-        throw new UnsupportedOperationException("PlayerGraphics is updated by Player composite. Use update(GridPoint2, float, GridPoint2, float, TileMovement, TiledMapTileLayer) instead.");
+        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Player. Используйте update(GridPoint2, float, GridPoint2, float) вместо этого.");
     }
 
     public Rectangle getRectangle() {

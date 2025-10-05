@@ -1,12 +1,9 @@
 package ru.mipt.bit.platformer;
 
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Interpolation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.Collections;
@@ -15,17 +12,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PlayerModelTest {
 
-    @Mock
-    private TiledMapTileLayer mockGroundLayer;
-    @Mock
-    private Interpolation mockInterpolation;
     @Mock
     private CollisionDetector mockCollisionDetector;
     @Mock
@@ -35,9 +26,8 @@ public class PlayerModelTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        // Mock the behavior of TileMovement if needed in specific tests
-        // The PlayerModel now takes TileMovement as a dependency.
+        mockCollisionDetector = mock(CollisionDetector.class);
+        mockTileMovement = mock(TileMovement.class);
 
         playerModel = new PlayerModel(new GridPoint2(0, 0), mockCollisionDetector, mockTileMovement);
     }
@@ -63,7 +53,7 @@ public class PlayerModelTest {
     void testMovementWithCollision() {
         when(mockCollisionDetector.isColliding(any(), any())).thenReturn(true);
         playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        assertEquals(new GridPoint2(0, 0), playerModel.getCoordinates()); // Should not move due to collision
+        assertEquals(new GridPoint2(0, 0), playerModel.getCoordinates()); // Не должен двигаться из-за столкновения
         assertEquals(0f, playerModel.getRotation());
     }
 
@@ -79,9 +69,9 @@ public class PlayerModelTest {
     void testMovementProgressUpdate() {
         when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
         playerModel.update(0.1f, Collections.emptyList(), Direction.UP);
-        assertEquals(0f, playerModel.getMovementProgress()); // Should reset to 0 at start of movement
-        playerModel.update(0.1f, Collections.emptyList(), null); // Simulate one step of movement
-        // The exact value depends on MOVEMENT_SPEED, but it should be > 0 and < 1
+        assertEquals(0f, playerModel.getMovementProgress()); // Должен сброситься до 0 в начале движения
+        playerModel.update(0.1f, Collections.emptyList(), null); // Имитация одного шага движения
+        // Точное значение зависит от MOVEMENT_SPEED, но оно должно быть > 0 и < 1
         assertTrue(playerModel.getMovementProgress() > 0f && playerModel.getMovementProgress() < 1f);
     }
 
@@ -89,7 +79,7 @@ public class PlayerModelTest {
     void testDestinationReached() {
         when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
         playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        // Simulate full movement progress
+        // Имитация полного прогресса движения
         for (int i = 0; i < 4; i++) {
             playerModel.update(0.1f, Collections.emptyList(), null);
         }
@@ -97,12 +87,4 @@ public class PlayerModelTest {
         assertEquals(1f, playerModel.getMovementProgress());
     }
 
-    @Test
-    void testTileMovementInteraction() {
-        when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
-        playerModel = new PlayerModel(new GridPoint2(0, 0), mockCollisionDetector, mockTileMovement);
-        playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-
-        verify(mockTileMovement).moveRectangleBetweenTileCenters(null, new GridPoint2(0, 0), new GridPoint2(1, 0), 0f);
-    }
 }
