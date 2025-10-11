@@ -6,28 +6,29 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Disposable;
 import ru.mipt.bit.platformer.util.TileMovement;
 
+import java.util.Collections;
 import java.util.List;
 
-public class Player implements GameObject {
+public class Player implements GameObject, Disposable {
 
-    private final PlayerModel model;
-    private final PlayerGraphics graphics;
+    private final GameUnitModel model;
+    private final GameUnitGraphics graphics;
     private final TiledMapTileLayer groundLayer; 
     private final InputHandler inputHandler;
 
-    public Player(Texture texture, GridPoint2 initialCoordinates, TiledMapTileLayer groundLayer, Interpolation interpolation, CollisionDetector collisionDetector, InputHandler inputHandler) {
-        this.groundLayer = groundLayer;
+    public Player(GameUnitModel model, GameUnitGraphics graphics, InputHandler inputHandler) {
+        this.model = model;
+        this.graphics = graphics;
         this.inputHandler = inputHandler;
-        TileMovement tileMovement = new TileMovement(groundLayer, interpolation);
-        this.model = new PlayerModel(initialCoordinates, collisionDetector, tileMovement);
-        this.graphics = new PlayerGraphics(texture, model.getCoordinates(), model.getRotation(), groundLayer, interpolation);
+        this.groundLayer = null;
     }
 
     @Override
     public void update(float deltaTime) {
-        throw new UnsupportedOperationException("Метод update(float deltaTime, List<? extends GameObject> collidableObjects) должен быть использован вместо этого.");
+        update(deltaTime, Collections.emptyList());
     }
 
     @Override
@@ -53,6 +54,7 @@ public class Player implements GameObject {
         return graphics.getRectangle();
     }
 
+    @Override
     public void dispose() {
         graphics.dispose();
     }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Disposable;
+import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,27 +28,36 @@ public class GameWorld implements Disposable {
     private final Obstacle treeObstacle;
     private final List<Obstacle> obstacles;
     private final CollisionDetector collisionDetector;
-    private final KeyboardInputHandler inputHandler;
+    private final InputHandler inputHandler;
 
-    public GameWorld(Batch batch) {
-        // Загрузка тайлов уровня
-        level = new TmxMapLoader().load("level.tmx");
+    public GameWorld(
+            Batch batch,
+            String levelPath,
+            String greenTreeTexturePath,
+            String blueTankTexturePath,
+            float playerMovementSpeed,
+            CollisionDetector collisionDetector,
+            InputHandler inputHandler) {
+        level = new TmxMapLoader().load(levelPath);
         levelRenderer = createSingleLayerMapRenderer(level, batch);
         groundLayer = getSingleLayer(level);
 
-        // Инициализация игровых объектов
         gameObjects = new ArrayList<>();
         obstacles = new ArrayList<>();
-        collisionDetector = new TileCollisionDetector();
-        inputHandler = new KeyboardInputHandler();
+        this.collisionDetector = collisionDetector;
+        this.inputHandler = inputHandler;
 
-        Texture greenTreeTexture = new Texture("images/greenTree.png");
-        treeObstacle = new Obstacle(greenTreeTexture, new GridPoint2(1, 3), groundLayer);
+        Texture greenTreeTexture = new Texture(greenTreeTexturePath);
+        ObstacleModel treeModel = new ObstacleModel(new GridPoint2(1, 3));
+        ObstacleGraphics treeGraphics = new ObstacleGraphics(greenTreeTexture, treeModel.getCoordinates(), groundLayer);
+        treeObstacle = new Obstacle(treeModel, treeGraphics);
         obstacles.add(treeObstacle);
         gameObjects.add(treeObstacle);
 
-        Texture blueTankTexture = new Texture("images/tank_blue.png");
-        player = new Player(blueTankTexture, new GridPoint2(1, 1), groundLayer, Interpolation.smooth, collisionDetector, inputHandler);
+        Texture blueTankTexture = new Texture(blueTankTexturePath);
+        PlayerModel playerModel = new PlayerModel(new GridPoint2(1, 1), collisionDetector, new TileMovement(groundLayer, Interpolation.smooth), playerMovementSpeed);
+        PlayerGraphics playerGraphics = new PlayerGraphics(blueTankTexture, playerModel.getCoordinates(), playerModel.getRotation(), groundLayer, Interpolation.smooth);
+        player = new Player(playerModel, playerGraphics, inputHandler);
         gameObjects.add(player);
 
         Gdx.input.setInputProcessor(inputHandler);
@@ -82,12 +92,8 @@ public class GameWorld implements Disposable {
     public void dispose() {
         level.dispose();
         for (GameObject object : gameObjects) {
-            if (object instanceof AbstractGameObject) {
-                ((AbstractGameObject) object).dispose();
-            } else if (object instanceof Obstacle) {
-                ((Obstacle) object).dispose();
-            } else if (object instanceof Player) {
-                ((Player) object).dispose();
+            if (object instanceof Disposable) {
+                ((Disposable) object).dispose();
             }
         }
     }

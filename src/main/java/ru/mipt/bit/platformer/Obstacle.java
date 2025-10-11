@@ -1,26 +1,24 @@
 package ru.mipt.bit.platformer;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Disposable;
 
 import java.util.List;
 
-public class Obstacle implements GameObject {
+public class Obstacle implements GameObject, Disposable {
 
-    private final ObstacleModel model;
-    private final ObstacleGraphics graphics;
+    private final GameUnitModel model;
+    private final GameUnitGraphics graphics;
 
-    public Obstacle(Texture texture, GridPoint2 initialCoordinates, TiledMapTileLayer groundLayer) {
-        this.model = new ObstacleModel(initialCoordinates);
-        this.graphics = new ObstacleGraphics(texture, model.getCoordinates(), groundLayer);
+    public Obstacle(GameUnitModel model, GameUnitGraphics graphics) {
+        this.model = model;
+        this.graphics = graphics;
     }
 
     @Override
     public void update(float deltaTime) {
-        throw new UnsupportedOperationException("Obstacle обновляется композитным классом Obstacle. Используйте update(float deltaTime, List<? extends GameObject> collidableObjects) вместо этого.");
     }
 
     @Override
@@ -41,6 +39,7 @@ public class Obstacle implements GameObject {
         return graphics.getRectangle();
     }
 
+    @Override
     public void dispose() {
         graphics.dispose();
     }

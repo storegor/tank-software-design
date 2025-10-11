@@ -5,11 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Disposable;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
 
-public abstract class AbstractGameObject implements GameObject {
+public abstract class AbstractGameObject implements Disposable {
     protected final Texture texture;
     protected final TextureRegion textureRegion;
     protected final Rectangle rectangle;
@@ -24,7 +25,6 @@ public abstract class AbstractGameObject implements GameObject {
         this.rotation = 0f;
     }
 
-    @Override
     public void render(Batch batch) {
         drawTextureRegionUnscaled(batch, textureRegion, rectangle, rotation);
     }
@@ -41,6 +41,7 @@ public abstract class AbstractGameObject implements GameObject {
         return textureRegion;
     }
 
+    @Override
     public void dispose() {
         texture.dispose();
     }

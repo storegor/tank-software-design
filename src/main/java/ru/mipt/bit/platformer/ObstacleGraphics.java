@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.moveRectangleAtTileCenter;
 
-public class ObstacleGraphics extends AbstractGameObject {
+public class ObstacleGraphics extends AbstractGameObject implements GameUnitGraphics {
 
     private final TiledMapTileLayer groundLayer;
 
@@ -18,21 +19,22 @@ public class ObstacleGraphics extends AbstractGameObject {
         this.groundLayer = groundLayer;
     }
 
+    @Override
     public void update(GridPoint2 currentCoordinates) {
         this.coordinates.set(currentCoordinates);
         moveRectangleAtTileCenter(groundLayer, rectangle, this.coordinates);
     }
 
     @Override
-    public void update(float deltaTime) {
-        throw new UnsupportedOperationException("ObstacleGraphics обновляется композитным классом Obstacle.");
+    public void update(GridPoint2 currentCoordinates, float rotation, GridPoint2 destinationCoordinates, float movementProgress) {
     }
 
     @Override
-    public void update(float deltaTime, List<? extends GameObject> collidableObjects) {
-        throw new UnsupportedOperationException("ObstacleGraphics обновляется композитным классом Obstacle.");
+    public void render(Batch batch) {
+        super.render(batch);
     }
 
+    @Override
     public Rectangle getRectangle() {
         return rectangle;
     }
