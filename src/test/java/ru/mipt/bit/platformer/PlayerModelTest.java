@@ -29,7 +29,7 @@ public class PlayerModelTest {
         mockCollisionDetector = mock(CollisionDetector.class);
         mockTileMovement = mock(TileMovement.class);
 
-        playerModel = new PlayerModel(new GridPoint2(0, 0), mockCollisionDetector, mockTileMovement);
+        playerModel = new PlayerModel(new GridPoint2(0, 0), mockCollisionDetector, mockTileMovement, 0.4f);
     }
 
     @Test

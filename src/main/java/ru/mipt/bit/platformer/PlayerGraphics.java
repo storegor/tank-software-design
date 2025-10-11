@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
@@ -9,7 +10,7 @@ import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.List;
 
-public class PlayerGraphics extends AbstractGameObject {
+public class PlayerGraphics extends AbstractGameObject implements GameUnitGraphics {
 
     private final TiledMapTileLayer groundLayer;
     private final TileMovement tileMovement;
@@ -21,6 +22,7 @@ public class PlayerGraphics extends AbstractGameObject {
         this.tileMovement = new TileMovement(groundLayer, interpolation);
     }
 
+    @Override
     public void update(GridPoint2 currentCoordinates, float currentRotation, GridPoint2 destinationCoordinates, float movementProgress) {
         this.coordinates.set(currentCoordinates);
         this.rotation = currentRotation;
@@ -28,15 +30,15 @@ public class PlayerGraphics extends AbstractGameObject {
     }
 
     @Override
-    public void update(float deltaTime) {
-        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Obstacle.");
+    public void update(GridPoint2 currentCoordinates) {
     }
 
     @Override
-    public void update(float deltaTime, List<? extends GameObject> collidableObjects) {
-        throw new UnsupportedOperationException("PlayerGraphics обновляется композитным классом Player.");
+    public void render(Batch batch) {
+        super.render(batch);
     }
 
+    @Override
     public Rectangle getRectangle() {
         return rectangle;
     }

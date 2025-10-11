@@ -8,9 +8,9 @@ import java.util.List;
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
-public class PlayerModel {
+public class PlayerModel implements GameUnitModel {
 
-    private static final float MOVEMENT_SPEED = 0.4f;
+    private final float movementSpeed;
 
     private final TileMovement tileMovement;
     private GridPoint2 coordinates;
@@ -20,14 +20,16 @@ public class PlayerModel {
     private List<? extends GameObject> currentCollidableObjects;
     private float rotation;
 
-    public PlayerModel(GridPoint2 initialCoordinates, CollisionDetector collisionDetector, TileMovement tileMovement) {
+    public PlayerModel(GridPoint2 initialCoordinates, CollisionDetector collisionDetector, TileMovement tileMovement, float movementSpeed) {
         this.coordinates = new GridPoint2(initialCoordinates);
         this.destinationCoordinates = new GridPoint2(initialCoordinates);
         this.tileMovement = tileMovement;
         this.collisionDetector = collisionDetector;
         this.rotation = 0f;
+        this.movementSpeed = movementSpeed;
     }
 
+    @Override
     public void update(float deltaTime, List<? extends GameObject> collidableObjects, Direction intendedDirection) {
         this.currentCollidableObjects = collidableObjects;
 
@@ -44,7 +46,7 @@ public class PlayerModel {
     }
 
     private void updateMovement(float deltaTime) {
-        movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
+        movementProgress = continueProgress(movementProgress, deltaTime, movementSpeed);
         if (isEqual(movementProgress, 1f)) {
             coordinates.set(destinationCoordinates);
         }
@@ -66,11 +68,8 @@ public class PlayerModel {
         return destinationCoordinates;
     }
 
+    @Override
     public float getMovementProgress() {
         return movementProgress;
-    }
-
-    public TileMovement getTileMovement() {
-        return tileMovement;
     }
 }
