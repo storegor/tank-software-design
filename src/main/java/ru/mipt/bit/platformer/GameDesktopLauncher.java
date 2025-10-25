@@ -6,44 +6,54 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static com.badlogic.gdx.Gdx.gl;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
-    private static final String LEVEL_PATH = "level.tmx";
-    private static final String GREEN_TREE_TEXTURE_PATH = "images/greenTree.png";
-    private static final String BLUE_TANK_TEXTURE_PATH = "images/tank_blue.png";
-    private static final float PLAYER_MOVEMENT_SPEED = 0.4f;
+    private static final String CONFIG_FILE_PATH = "config.properties";
 
     private Batch batch;
     private GameWorld gameWorld;
-    private TiledMap level;
-    private TiledMapTileLayer groundLayer;
-    private CollisionDetector collisionDetector;
-    private InputHandler inputHandler;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        level = new TmxMapLoader().load(LEVEL_PATH);
-        groundLayer = getSingleLayer(level);
-        collisionDetector = new TileCollisionDetector(groundLayer);
-        inputHandler = new KeyboardInputHandler();
-        gameWorld = new GameWorld(
-                batch,
-                LEVEL_PATH,
-                GREEN_TREE_TEXTURE_PATH,
-                BLUE_TANK_TEXTURE_PATH,
-                PLAYER_MOVEMENT_SPEED,
-                collisionDetector,
-                inputHandler);
-        Gdx.input.setInputProcessor(inputHandler);
+
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_PATH)) {
+            if (input == null) {
+                System.err.println("Sorry, unable to find " + CONFIG_FILE_PATH + ", using default random level generator.");
+            } else {
+                properties.load(input);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.err.println("Error loading " + CONFIG_FILE_PATH + ", using default random level generator.");
+        }
+
+        LevelGenerator levelGenerator;
+        String generatorType = properties.getProperty("level.generator.type", "random");
+
+        switch (generatorType) {
+            case "file":
+                String levelFilePath = properties.getProperty("level.file.path", "level.txt");
+                levelGenerator = new FileLevelGenerator(levelFilePath);
+                break;
+            case "random":
+            default:
+                levelGenerator = new RandomLevelGenerator();
+                break;
+        }
+
+        GameWorldFactory gameWorldFactory = new GameWorldFactory();
+        gameWorld = gameWorldFactory.createGameWorld(batch, levelGenerator);
+        Gdx.input.setInputProcessor(gameWorld.getPlayer().getInputHandler());
     }
 
     @Override
@@ -73,7 +83,6 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void dispose() {
         gameWorld.dispose();
         batch.dispose();
-        level.dispose();
     }
 
     public static void main(String[] args) {
