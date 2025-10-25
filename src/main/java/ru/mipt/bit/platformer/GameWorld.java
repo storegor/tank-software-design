@@ -14,7 +14,6 @@ import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
@@ -25,7 +24,6 @@ public class GameWorld implements Disposable {
     private final TiledMapTileLayer groundLayer;
     private final List<GameObject> gameObjects;
     private final Player player;
-    private final Obstacle treeObstacle;
     private final List<Obstacle> obstacles;
     private final CollisionDetector collisionDetector;
     private final InputHandler inputHandler;
@@ -37,10 +35,13 @@ public class GameWorld implements Disposable {
             String blueTankTexturePath,
             float playerMovementSpeed,
             CollisionDetector collisionDetector,
-            InputHandler inputHandler) {
+            InputHandler inputHandler,
+            LevelGenerator levelGenerator) {
         level = new TmxMapLoader().load(levelPath);
         levelRenderer = createSingleLayerMapRenderer(level, batch);
         groundLayer = getSingleLayer(level);
+
+        LevelData levelData = levelGenerator.generateLevel(groundLayer);
 
         gameObjects = new ArrayList<>();
         obstacles = new ArrayList<>();
@@ -48,14 +49,16 @@ public class GameWorld implements Disposable {
         this.inputHandler = inputHandler;
 
         Texture greenTreeTexture = new Texture(greenTreeTexturePath);
-        ObstacleModel treeModel = new ObstacleModel(new GridPoint2(1, 3));
-        ObstacleGraphics treeGraphics = new ObstacleGraphics(greenTreeTexture, treeModel.getCoordinates(), groundLayer);
-        treeObstacle = new Obstacle(treeModel, treeGraphics);
-        obstacles.add(treeObstacle);
-        gameObjects.add(treeObstacle);
+        for (GridPoint2 obstaclePos : levelData.getObstaclePositions()) {
+            ObstacleModel treeModel = new ObstacleModel(obstaclePos);
+            ObstacleGraphics treeGraphics = new ObstacleGraphics(greenTreeTexture, treeModel.getCoordinates(), groundLayer);
+            Obstacle treeObstacle = new Obstacle(treeModel, treeGraphics);
+            obstacles.add(treeObstacle);
+            gameObjects.add(treeObstacle);
+        }
 
         Texture blueTankTexture = new Texture(blueTankTexturePath);
-        PlayerModel playerModel = new PlayerModel(new GridPoint2(1, 1), collisionDetector, new TileMovement(groundLayer, Interpolation.smooth), playerMovementSpeed);
+        PlayerModel playerModel = new PlayerModel(levelData.getPlayerStart(), collisionDetector, new TileMovement(groundLayer, Interpolation.smooth), playerMovementSpeed);
         PlayerGraphics playerGraphics = new PlayerGraphics(blueTankTexture, playerModel.getCoordinates(), playerModel.getRotation(), groundLayer, Interpolation.smooth);
         player = new Player(playerModel, playerGraphics, inputHandler);
         gameObjects.add(player);

@@ -1,13 +1,9 @@
 package ru.mipt.bit.platformer;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
-import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,14 +12,12 @@ public class Player implements GameObject, Disposable {
 
     private final GameUnitModel model;
     private final GameUnitGraphics graphics;
-    private final TiledMapTileLayer groundLayer; 
     private final InputHandler inputHandler;
 
     public Player(GameUnitModel model, GameUnitGraphics graphics, InputHandler inputHandler) {
         this.model = model;
         this.graphics = graphics;
         this.inputHandler = inputHandler;
-        this.groundLayer = null;
     }
 
     @Override
@@ -52,6 +46,10 @@ public class Player implements GameObject, Disposable {
 
     public Rectangle getRectangle() {
         return graphics.getRectangle();
+    }
+
+    public InputHandler getInputHandler() {
+        return inputHandler;
     }
 
     @Override
