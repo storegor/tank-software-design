@@ -22,6 +22,7 @@ public class FileLevelGenerator implements LevelGenerator {
     public LevelData generateLevel(TiledMapTileLayer groundLayer) {
         GridPoint2 playerStart = null;
         List<GridPoint2> obstaclePositions = new ArrayList<>();
+        List<GridPoint2> aiTankPositions = new ArrayList<>();
         List<String> lines = new ArrayList<>();
 
 
@@ -55,6 +56,9 @@ try (InputStream is = getClass().getClassLoader().getResourceAsStream(levelFileP
                             }
                             playerStart = new GridPoint2(x, y);
                             break;
+                        case 'A':
+                            aiTankPositions.add(new GridPoint2(x, y));
+                            break;
                         case '_':
                             break;
                         default:
@@ -67,6 +71,6 @@ try (InputStream is = getClass().getClassLoader().getResourceAsStream(levelFileP
                 throw new LevelLoadingException("Player start position not found", levelFilePath);
             }
 
-            return new LevelData(playerStart, obstaclePositions);
+            return new LevelData(playerStart, obstaclePositions, aiTankPositions);
         }
     }

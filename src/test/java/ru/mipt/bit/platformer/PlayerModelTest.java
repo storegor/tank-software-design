@@ -1,88 +1,92 @@
 package ru.mipt.bit.platformer;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import ru.mipt.bit.platformer.util.TileMovement;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-public class PlayerModelTest {
+class PlayerModelTest {
+
+    private static final float PLAYER_MOVEMENT_SPEED = 0.4f;
 
     @Mock
-    private CollisionDetector mockCollisionDetector;
+    private CollisionDetector collisionDetector;
     @Mock
-    private TileMovement mockTileMovement;
+    private TiledMapTileLayer groundLayer;
 
     private PlayerModel playerModel;
+    private GridPoint2 initialCoordinates;
 
     @BeforeEach
     void setUp() {
-        mockCollisionDetector = mock(CollisionDetector.class);
-        mockTileMovement = mock(TileMovement.class);
+        MockitoAnnotations.openMocks(this);
+        initialCoordinates = new GridPoint2(1, 1);
+        playerModel = new PlayerModel(initialCoordinates, collisionDetector, PLAYER_MOVEMENT_SPEED);
 
-        playerModel = new PlayerModel(new GridPoint2(0, 0), mockCollisionDetector, mockTileMovement, 0.4f);
+        when(groundLayer.getWidth()).thenReturn(10);
+        when(groundLayer.getHeight()).thenReturn(10);
     }
 
     @Test
-    void testInitialPositionAndRotation() {
-        assertEquals(new GridPoint2(0, 0), playerModel.getCoordinates());
-        assertEquals(0f, playerModel.getRotation());
+    void initialCoordinatesAreCorrect() {
+        assertEquals(initialCoordinates, playerModel.getCoordinates());
     }
 
     @Test
-    void testMovementWithoutCollision() {
-        when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
-        playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        playerModel.update(0.1f, Collections.emptyList(), null);
-        playerModel.update(0.1f, Collections.emptyList(), null);
-        playerModel.update(0.1f, Collections.emptyList(), null);
-        assertEquals(new GridPoint2(1, 0), playerModel.getCoordinates());
-        assertEquals(0f, playerModel.getRotation());
+    void setDirectionUpdatesCurrentDirection() {
+        playerModel.setDirection(Direction.UP);
+        playerModel.update(0f, Collections.emptyList());
+        assertEquals(new GridPoint2(1, 2), playerModel.getDestinationCoordinates());
     }
 
     @Test
-    void testMovementWithCollision() {
-        when(mockCollisionDetector.isColliding(any(), any())).thenReturn(true);
-        playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        assertEquals(new GridPoint2(0, 0), playerModel.getCoordinates());
-        assertEquals(0f, playerModel.getRotation());
+    void movementUpdatesCoordinates() {
+        when(collisionDetector.isColliding(eq(playerModel), any(GridPoint2.class), anyList())).thenReturn(false);
+        playerModel.setDirection(Direction.RIGHT);
+        playerModel.update(1f, Collections.emptyList());
+        assertEquals(new GridPoint2(2, 1), playerModel.getCoordinates());
     }
 
     @Test
-    void testRotationChange() {
-        when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
-        playerModel.update(0.1f, Collections.emptyList(), Direction.UP);
-        assertEquals(new GridPoint2(0, 1), playerModel.getDestinationCoordinates());
-        assertEquals(90f, playerModel.getRotation());
+    void collisionPreventsMovement() {
+        when(collisionDetector.isColliding(eq(playerModel), any(GridPoint2.class), anyList())).thenReturn(true);
+        playerModel.setDirection(Direction.UP);
+        playerModel.update(1f, Collections.emptyList());
+        assertEquals(initialCoordinates, playerModel.getCoordinates());
     }
 
     @Test
-    void testMovementProgressUpdate() {
-        when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
-        playerModel.update(0.1f, Collections.emptyList(), Direction.UP);
-        assertEquals(0f, playerModel.getMovementProgress());
-        playerModel.update(0.1f, Collections.emptyList(), null);
-        assertTrue(playerModel.getMovementProgress() > 0f && playerModel.getMovementProgress() < 1f);
+    void rotationUpdatesOnMovement() {
+        when(collisionDetector.isColliding(eq(playerModel), any(GridPoint2.class), anyList())).thenReturn(false);
+        playerModel.setDirection(Direction.UP);
+        playerModel.update(1f, Collections.emptyList());
+        assertEquals(Direction.UP.getRotation(), playerModel.getRotation());
     }
 
     @Test
-    void testDestinationReached() {
-        when(mockCollisionDetector.isColliding(any(), any())).thenReturn(false);
-        playerModel.update(0.1f, Collections.emptyList(), Direction.RIGHT);
-        for (int i = 0; i < 4; i++) {
-            playerModel.update(0.1f, Collections.emptyList(), null);
+    void playerModelStaysInBounds() {
+        // Simulate movement to the right edge
+        when(collisionDetector.isColliding(eq(playerModel), any(GridPoint2.class), anyList())).thenReturn(false);
+        for (int i = 0; i < 9; i++) { // Move to (9,1)
+            playerModel.setDirection(Direction.RIGHT);
+            playerModel.update(1f, Collections.emptyList());
         }
-        assertEquals(new GridPoint2(1, 0), playerModel.getCoordinates());
-        assertEquals(1f, playerModel.getMovementProgress());
-    }
+        assertEquals(new GridPoint2(9, 1), playerModel.getCoordinates());
 
+        // Try to move out of bounds (right)
+        when(collisionDetector.isColliding(eq(playerModel), eq(new GridPoint2(10, 1)), anyList())).thenReturn(true);
+        playerModel.setDirection(Direction.RIGHT);
+        playerModel.update(1f, Collections.emptyList());
+        assertEquals(new GridPoint2(9, 1), playerModel.getCoordinates());
+    }
 }

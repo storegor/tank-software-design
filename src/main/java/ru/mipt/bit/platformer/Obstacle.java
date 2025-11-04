@@ -5,14 +5,12 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 
-import java.util.List;
-
 public class Obstacle implements GameObject, Disposable {
 
-    private final GameUnitModel model;
-    private final GameUnitGraphics graphics;
+    private final ObstacleModel model;
+    private final ObstacleGraphics graphics;
 
-    public Obstacle(GameUnitModel model, GameUnitGraphics graphics) {
+    public Obstacle(ObstacleModel model, ObstacleGraphics graphics) {
         this.model = model;
         this.graphics = graphics;
     }
@@ -22,8 +20,7 @@ public class Obstacle implements GameObject, Disposable {
     }
 
     @Override
-    public void update(float deltaTime, List<? extends GameObject> collidableObjects) {
-        graphics.update(model.getCoordinates());
+    public void update(float deltaTime, java.util.List<? extends GameObject> collidableObjects) {
     }
 
     @Override

@@ -1,9 +1,15 @@
 package ru.mipt.bit.platformer;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Interpolation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
@@ -18,16 +24,32 @@ public class GameWorldFactory {
         TiledMap level = new TmxMapLoader().load(LEVEL_PATH);
         TiledMapTileLayer groundLayer = getSingleLayer(level);
         CollisionDetector collisionDetector = new TileCollisionDetector(groundLayer);
-        InputHandler inputHandler = new KeyboardInputHandler();
+
+        LevelData levelData = levelGenerator.generateLevel(groundLayer);
+
+        Texture blueTankTexture = new Texture(BLUE_TANK_TEXTURE_PATH);
+        PlayerModel playerModel = new PlayerModel(levelData.getPlayerStart(), collisionDetector, PLAYER_MOVEMENT_SPEED);
+        PlayerGraphics playerGraphics = new PlayerGraphics(blueTankTexture, playerModel.getCoordinates(), playerModel.getRotation(), groundLayer, Interpolation.smooth);
+        PlayerTank playerTank = new PlayerTank(playerModel, playerGraphics);
+
+        List<Tank> aiTanks = new ArrayList<>();
+        for (GridPoint2 aiTankPos : levelData.getAiTankPositions()) {
+            GameUnitModel aiTankModel = new PlayerModel(aiTankPos, collisionDetector, PLAYER_MOVEMENT_SPEED);
+            GameUnitGraphics aiTankGraphics = new PlayerGraphics(blueTankTexture, aiTankModel.getCoordinates(), aiTankModel.getRotation(), groundLayer, Interpolation.smooth);
+            Tank aiTank = new Tank(aiTankModel, aiTankGraphics);
+            AiTankController aiTankController = new AiTankController(aiTankModel, aiTank.getCommandProcessor());
+            aiTank.setAiTankController(aiTankController);
+            aiTanks.add(aiTank);
+        }
 
         return new GameWorld(
                 batch,
                 LEVEL_PATH,
                 GREEN_TREE_TEXTURE_PATH,
-                BLUE_TANK_TEXTURE_PATH,
                 PLAYER_MOVEMENT_SPEED,
                 collisionDetector,
-                inputHandler,
-                levelGenerator);
+                levelData,
+                playerTank,
+                aiTanks);
     }
 }

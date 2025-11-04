@@ -53,7 +53,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         GameWorldFactory gameWorldFactory = new GameWorldFactory();
         gameWorld = gameWorldFactory.createGameWorld(batch, levelGenerator);
-        Gdx.input.setInputProcessor(gameWorld.getPlayer().getInputHandler());
+        Gdx.input.setInputProcessor(gameWorld.getPlayerTank().getInputHandler());
     }
 
     @Override

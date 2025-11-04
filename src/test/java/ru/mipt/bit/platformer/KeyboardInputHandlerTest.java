@@ -2,136 +2,160 @@ package ru.mipt.bit.platformer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static com.badlogic.gdx.Input.Keys;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-public class KeyboardInputHandlerTest {
+class KeyboardInputHandlerTest {
+
+    @Mock
+    private GameUnitModel mockPlayerModel;
+    @Mock
+    private CommandProcessor mockCommandProcessor;
 
     private KeyboardInputHandler inputHandler;
 
     @BeforeEach
     void setUp() {
-        inputHandler = new KeyboardInputHandler();
+        MockitoAnnotations.openMocks(this);
+        inputHandler = new KeyboardInputHandler(mockPlayerModel, mockCommandProcessor);
     }
 
     @Test
-    void testInitialDirectionIsNull() {
-        assertNull(inputHandler.getDirection());
-    }
-
-    @Test
-    void testKeyDownUpSetsDirectionUp() {
+    void keyDownAddsMoveCommandForUp() {
         inputHandler.keyDown(Keys.UP);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.UP, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownW_SetsDirectionUp() {
+    void keyDownAddsMoveCommandForW() {
         inputHandler.keyDown(Keys.W);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.UP, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownLeftSetsDirectionLeft() {
+    void keyDownAddsMoveCommandForLeft() {
         inputHandler.keyDown(Keys.LEFT);
-        assertEquals(Direction.LEFT, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.LEFT, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownASetsDirectionLeft() {
+    void keyDownAddsMoveCommandForA() {
         inputHandler.keyDown(Keys.A);
-        assertEquals(Direction.LEFT, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.LEFT, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownDownSetsDirectionDown() {
+    void keyDownAddsMoveCommandForDown() {
         inputHandler.keyDown(Keys.DOWN);
-        assertEquals(Direction.DOWN, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.DOWN, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownSSetsDirectionDown() {
+    void keyDownAddsMoveCommandForS() {
         inputHandler.keyDown(Keys.S);
-        assertEquals(Direction.DOWN, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.DOWN, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownRightSetsDirectionRight() {
+    void keyDownAddsMoveCommandForRight() {
         inputHandler.keyDown(Keys.RIGHT);
-        assertEquals(Direction.RIGHT, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.RIGHT, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyDownDSetsDirectionRight() {
+    void keyDownAddsMoveCommandForD() {
         inputHandler.keyDown(Keys.D);
-        assertEquals(Direction.RIGHT, inputHandler.getDirection());
+        ArgumentCaptor<Command> commandCaptor = ArgumentCaptor.forClass(Command.class);
+        verify(mockCommandProcessor, times(1)).addCommand(commandCaptor.capture());
+        assertTrue(commandCaptor.getValue() instanceof MoveCommand);
+        MoveCommand moveCommand = (MoveCommand) commandCaptor.getValue();
+        assertEquals(Direction.RIGHT, moveCommand.getDirection());
+        assertEquals(mockPlayerModel, moveCommand.getTankModel());
     }
 
     @Test
-    void testKeyUpResetsDirectionIfMatching() {
-        inputHandler.keyDown(Keys.UP);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+    void keyUpDoesNothing() {
         inputHandler.keyUp(Keys.UP);
-        assertNull(inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 
     @Test
-    void testKeyUpDoesNotResetDirectionIfDifferent() {
-        inputHandler.keyDown(Keys.UP);
-        assertEquals(Direction.UP, inputHandler.getDirection());
-        inputHandler.keyUp(Keys.LEFT);
-        assertEquals(Direction.UP, inputHandler.getDirection());
-    }
-
-    @Test
-    void testResetDirectionMethod() {
-        inputHandler.keyDown(Keys.UP);
-        assertEquals(Direction.UP, inputHandler.getDirection());
-        inputHandler.resetDirection();
-        assertNull(inputHandler.getDirection());
-    }
-
-    @Test
-    void testKeyTypedDoesNothing() {
-        inputHandler.keyDown(Keys.UP);
+    void keyTypedDoesNothing() {
         inputHandler.keyTyped('c');
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 
     @Test
-    void testTouchDownDoesNothing() {
-        inputHandler.keyDown(Keys.UP);
+    void touchDownDoesNothing() {
         inputHandler.touchDown(0, 0, 0, 0);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 
     @Test
-    void testTouchUpDoesNothing() {
-        inputHandler.keyDown(Keys.UP);
+    void touchUpDoesNothing() {
         inputHandler.touchUp(0, 0, 0, 0);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 
     @Test
-    void testTouchDraggedDoesNothing() {
-        inputHandler.keyDown(Keys.UP);
+    void touchDraggedDoesNothing() {
         inputHandler.touchDragged(0, 0, 0);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 
     @Test
-    void testMouseMovedDoesNothing() {
-        inputHandler.keyDown(Keys.UP);
+    void mouseMovedDoesNothing() {
         inputHandler.mouseMoved(0, 0);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 
     @Test
-    void testScrolledDoesNothing() {
-        inputHandler.keyDown(Keys.UP);
+    void scrolledDoesNothing() {
         inputHandler.scrolled(1);
-        assertEquals(Direction.UP, inputHandler.getDirection());
+        verify(mockCommandProcessor, never()).addCommand(any());
     }
 }

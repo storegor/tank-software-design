@@ -4,43 +4,36 @@ import com.badlogic.gdx.Input.Keys;
 
 public class KeyboardInputHandler implements InputHandler {
 
-    private Direction currentDirection = null;
+    private final CommandProcessor commandProcessor;
+    private final GameUnitModel playerModel;
 
-    @Override
-    public Direction getDirection() {
-        return currentDirection;
+    public KeyboardInputHandler(GameUnitModel playerModel, CommandProcessor commandProcessor) {
+        this.playerModel = playerModel;
+        this.commandProcessor = commandProcessor;
     }
 
     @Override
-    public void resetDirection() {
-        this.currentDirection = null;
+    public void handleInput(CommandProcessor commandProcessor) {
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Keys.UP || keycode == Keys.W) {
-            currentDirection = Direction.UP;
-        } else if (keycode == Keys.LEFT || keycode == Keys.A) {
-            currentDirection = Direction.LEFT;
-        } else if (keycode == Keys.DOWN || keycode == Keys.S) {
-            currentDirection = Direction.DOWN;
-        } else if (keycode == Keys.RIGHT || keycode == Keys.D) {
-            currentDirection = Direction.RIGHT;
+        if (playerModel.getCurrentDirection() == null) {
+            if (keycode == Keys.UP || keycode == Keys.W) {
+                commandProcessor.addCommand(new MoveCommand(playerModel, Direction.UP));
+            } else if (keycode == Keys.LEFT || keycode == Keys.A) {
+                commandProcessor.addCommand(new MoveCommand(playerModel, Direction.LEFT));
+            } else if (keycode == Keys.DOWN || keycode == Keys.S) {
+                commandProcessor.addCommand(new MoveCommand(playerModel, Direction.DOWN));
+            } else if (keycode == Keys.RIGHT || keycode == Keys.D) {
+                commandProcessor.addCommand(new MoveCommand(playerModel, Direction.RIGHT));
+            }
         }
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if ((keycode == Keys.UP || keycode == Keys.W) && currentDirection == Direction.UP) {
-            currentDirection = null;
-        } else if ((keycode == Keys.LEFT || keycode == Keys.A) && currentDirection == Direction.LEFT) {
-            currentDirection = null;
-        } else if ((keycode == Keys.DOWN || keycode == Keys.S) && currentDirection == Direction.DOWN) {
-            currentDirection = null;
-        } else if ((keycode == Keys.RIGHT || keycode == Keys.D) && currentDirection == Direction.RIGHT) {
-            currentDirection = null;
-        }
         return false;
     }
 

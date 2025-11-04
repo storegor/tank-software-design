@@ -1,6 +1,5 @@
 package ru.mipt.bit.platformer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapRenderer;
@@ -8,9 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Disposable;
-import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,30 +20,30 @@ public class GameWorld implements Disposable {
     private final MapRenderer levelRenderer;
     private final TiledMapTileLayer groundLayer;
     private final List<GameObject> gameObjects;
-    private final Player player;
+    private final PlayerTank playerTank;
     private final List<Obstacle> obstacles;
+    private final List<Tank> aiTanks;
     private final CollisionDetector collisionDetector;
-    private final InputHandler inputHandler;
 
     public GameWorld(
             Batch batch,
             String levelPath,
             String greenTreeTexturePath,
-            String blueTankTexturePath,
             float playerMovementSpeed,
             CollisionDetector collisionDetector,
-            InputHandler inputHandler,
-            LevelGenerator levelGenerator) {
+            LevelData levelData,
+            PlayerTank playerTank,
+            List<Tank> aiTanks) {
         level = new TmxMapLoader().load(levelPath);
         levelRenderer = createSingleLayerMapRenderer(level, batch);
         groundLayer = getSingleLayer(level);
 
-        LevelData levelData = levelGenerator.generateLevel(groundLayer);
+        this.playerTank = playerTank;
+        this.aiTanks = aiTanks;
+        this.collisionDetector = collisionDetector;
 
         gameObjects = new ArrayList<>();
         obstacles = new ArrayList<>();
-        this.collisionDetector = collisionDetector;
-        this.inputHandler = inputHandler;
 
         Texture greenTreeTexture = new Texture(greenTreeTexturePath);
         for (GridPoint2 obstaclePos : levelData.getObstaclePositions()) {
@@ -57,19 +54,25 @@ public class GameWorld implements Disposable {
             gameObjects.add(treeObstacle);
         }
 
-        Texture blueTankTexture = new Texture(blueTankTexturePath);
-        PlayerModel playerModel = new PlayerModel(levelData.getPlayerStart(), collisionDetector, new TileMovement(groundLayer, Interpolation.smooth), playerMovementSpeed);
-        PlayerGraphics playerGraphics = new PlayerGraphics(blueTankTexture, playerModel.getCoordinates(), playerModel.getRotation(), groundLayer, Interpolation.smooth);
-        player = new Player(playerModel, playerGraphics, inputHandler);
-        gameObjects.add(player);
-
-        Gdx.input.setInputProcessor(inputHandler);
+        gameObjects.add(playerTank);
+        gameObjects.addAll(aiTanks);
     }
 
     public void update(float deltaTime) {
-        List<? extends GameObject> collidableObjects = getCollidableObjects();
+        List<GameObject> allCollidableObjects = new ArrayList<>();
+        allCollidableObjects.addAll(obstacles);
+        allCollidableObjects.add(playerTank);
+        allCollidableObjects.addAll(aiTanks);
+
+        playerTank.update(deltaTime, allCollidableObjects);
+        for (Tank aiTank : aiTanks) {
+            aiTank.update(deltaTime, allCollidableObjects);
+        }
+
         for (GameObject object : gameObjects) {
-            object.update(deltaTime, collidableObjects);
+            if (!(object instanceof Tank)) {
+                object.update(deltaTime, allCollidableObjects);
+            }
         }
     }
 
@@ -82,13 +85,8 @@ public class GameWorld implements Disposable {
         batch.end();
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    private List<? extends GameObject> getCollidableObjects() {
-        List<GameObject> allCollidable = new ArrayList<>(obstacles);
-        return allCollidable;
+    public PlayerTank getPlayerTank() {
+        return playerTank;
     }
 
     @Override

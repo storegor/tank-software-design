@@ -12,7 +12,7 @@ public abstract class CollisionDetector {
         this.groundLayer = groundLayer;
     }
 
-    public abstract boolean isColliding(GridPoint2 targetCoordinates, List<? extends GameObject> collidableObjects);
+    public abstract boolean isColliding(GameUnitModel movingUnit, GridPoint2 targetCoordinates, List<? extends GameObject> collidableObjects);
 
     protected boolean isTileOutOfBounds(GridPoint2 targetCoordinates) {
         int mapWidthInTiles = groundLayer.getWidth();
