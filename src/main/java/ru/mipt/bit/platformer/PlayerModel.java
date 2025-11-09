@@ -9,7 +9,10 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
 public class PlayerModel implements GameUnitModel {
 
+    private static final int MAX_HP = 100;
     private final float movementSpeed;
+    private int hp;
+    private final int maxHp;
 
     private GridPoint2 coordinates;
     private GridPoint2 destinationCoordinates;
@@ -26,6 +29,8 @@ public class PlayerModel implements GameUnitModel {
         this.rotation = 0f;
         this.movementSpeed = movementSpeed;
         this.currentDirection = null;
+        this.maxHp = MAX_HP;
+        this.hp = MAX_HP;
     }
 
     @Override
@@ -83,5 +88,15 @@ public class PlayerModel implements GameUnitModel {
     @Override
     public float getMovementProgress() {
         return movementProgress;
+    }
+
+    @Override
+    public int getHp() {
+        return hp;
+    }
+
+    @Override
+    public int getMaxHp() {
+        return MAX_HP;
     }
 }

@@ -1,12 +1,14 @@
 package ru.mipt.bit.platformer;
 
+import java.util.List;
+
 public class PlayerTank extends Tank {
 
     private final InputHandler inputHandler;
 
-    public PlayerTank(GameUnitModel model, GameUnitGraphics graphics) {
+    public PlayerTank(GameUnitModel model, GameUnitGraphics graphics, List<HealthBarGraphicsDecorator> decorators) {
         super(model, graphics);
-        this.inputHandler = new KeyboardInputHandler(this.getModel(), this.getCommandProcessor());
+        this.inputHandler = new KeyboardInputHandler(this.getModel(), this.getCommandProcessor(), decorators);
     }
 
     @Override

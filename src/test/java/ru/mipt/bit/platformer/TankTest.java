@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +32,7 @@ class TankTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         tank = new Tank(mockModel, mockGraphics, mockAiTankController);
-        playerTank = new PlayerTank(mockModel, mockGraphics);
+        playerTank = new PlayerTank(mockModel, mockGraphics, new ArrayList<>());
     }
 
     @Test

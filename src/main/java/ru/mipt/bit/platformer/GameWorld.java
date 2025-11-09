@@ -24,6 +24,7 @@ public class GameWorld implements Disposable {
     private final List<Obstacle> obstacles;
     private final List<Tank> aiTanks;
     private final CollisionDetector collisionDetector;
+    private final List<HealthBarGraphicsDecorator> healthBarDecorators;
 
     public GameWorld(
             Batch batch,
@@ -33,7 +34,8 @@ public class GameWorld implements Disposable {
             CollisionDetector collisionDetector,
             LevelData levelData,
             PlayerTank playerTank,
-            List<Tank> aiTanks) {
+            List<Tank> aiTanks,
+            List<HealthBarGraphicsDecorator> healthBarDecorators) {
         level = new TmxMapLoader().load(levelPath);
         levelRenderer = createSingleLayerMapRenderer(level, batch);
         groundLayer = getSingleLayer(level);
@@ -41,6 +43,7 @@ public class GameWorld implements Disposable {
         this.playerTank = playerTank;
         this.aiTanks = aiTanks;
         this.collisionDetector = collisionDetector;
+        this.healthBarDecorators = healthBarDecorators;
 
         gameObjects = new ArrayList<>();
         obstacles = new ArrayList<>();
@@ -87,6 +90,10 @@ public class GameWorld implements Disposable {
 
     public PlayerTank getPlayerTank() {
         return playerTank;
+    }
+
+    public List<HealthBarGraphicsDecorator> getHealthBarDecorators() {
+        return healthBarDecorators;
     }
 
     @Override

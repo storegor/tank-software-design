@@ -2,14 +2,18 @@ package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.Input.Keys;
 
+import java.util.List;
+
 public class KeyboardInputHandler implements InputHandler {
 
     private final CommandProcessor commandProcessor;
     private final GameUnitModel playerModel;
+    private final List<HealthBarGraphicsDecorator> decorators;
 
-    public KeyboardInputHandler(GameUnitModel playerModel, CommandProcessor commandProcessor) {
+    public KeyboardInputHandler(GameUnitModel playerModel, CommandProcessor commandProcessor, List<HealthBarGraphicsDecorator> decorators) {
         this.playerModel = playerModel;
         this.commandProcessor = commandProcessor;
+        this.decorators = decorators;
     }
 
     @Override
@@ -28,6 +32,9 @@ public class KeyboardInputHandler implements InputHandler {
             } else if (keycode == Keys.RIGHT || keycode == Keys.D) {
                 commandProcessor.addCommand(new MoveCommand(playerModel, Direction.RIGHT));
             }
+        }
+        if (keycode == Keys.L) {
+            commandProcessor.addCommand(new ToggleHpBarVisibilityCommand(decorators));
         }
         return false;
     }

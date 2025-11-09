@@ -6,6 +6,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+
 import static com.badlogic.gdx.Input.Keys;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +28,7 @@ class KeyboardInputHandlerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        inputHandler = new KeyboardInputHandler(mockPlayerModel, mockCommandProcessor);
+        inputHandler = new KeyboardInputHandler(mockPlayerModel, mockCommandProcessor, new ArrayList<>());
     }
 
     @Test

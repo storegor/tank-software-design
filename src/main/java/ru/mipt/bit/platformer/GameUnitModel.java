@@ -12,6 +12,8 @@ public interface GameUnitModel {
     float getRotation();
     GridPoint2 getDestinationCoordinates();
     float getMovementProgress();
+    int getHp();
+    int getMaxHp();
 }
 
 

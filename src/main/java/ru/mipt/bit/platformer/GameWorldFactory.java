@@ -27,16 +27,22 @@ public class GameWorldFactory {
 
         LevelData levelData = levelGenerator.generateLevel(groundLayer);
 
+        List<HealthBarGraphicsDecorator> healthBarDecorators = new ArrayList<>();
+
         Texture blueTankTexture = new Texture(BLUE_TANK_TEXTURE_PATH);
         PlayerModel playerModel = new PlayerModel(levelData.getPlayerStart(), collisionDetector, PLAYER_MOVEMENT_SPEED);
         PlayerGraphics playerGraphics = new PlayerGraphics(blueTankTexture, playerModel.getCoordinates(), playerModel.getRotation(), groundLayer, Interpolation.smooth);
-        PlayerTank playerTank = new PlayerTank(playerModel, playerGraphics);
+        HealthBarGraphicsDecorator playerHealthBar = new HealthBarGraphicsDecorator(playerGraphics, playerModel);
+        healthBarDecorators.add(playerHealthBar);
+        PlayerTank playerTank = new PlayerTank(playerModel, playerHealthBar, healthBarDecorators);
 
         List<Tank> aiTanks = new ArrayList<>();
         for (GridPoint2 aiTankPos : levelData.getAiTankPositions()) {
             GameUnitModel aiTankModel = new PlayerModel(aiTankPos, collisionDetector, PLAYER_MOVEMENT_SPEED);
             GameUnitGraphics aiTankGraphics = new PlayerGraphics(blueTankTexture, aiTankModel.getCoordinates(), aiTankModel.getRotation(), groundLayer, Interpolation.smooth);
-            Tank aiTank = new Tank(aiTankModel, aiTankGraphics);
+            HealthBarGraphicsDecorator aiHealthBar = new HealthBarGraphicsDecorator(aiTankGraphics, aiTankModel);
+            healthBarDecorators.add(aiHealthBar);
+            Tank aiTank = new Tank(aiTankModel, aiHealthBar);
             AiTankController aiTankController = new AiTankController(aiTankModel, aiTank.getCommandProcessor());
             aiTank.setAiTankController(aiTankController);
             aiTanks.add(aiTank);
@@ -50,6 +56,7 @@ public class GameWorldFactory {
                 collisionDetector,
                 levelData,
                 playerTank,
-                aiTanks);
+                aiTanks,
+                healthBarDecorators);
     }
 }
