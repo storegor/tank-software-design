@@ -99,4 +99,9 @@ public class PlayerModel implements GameUnitModel {
     public int getMaxHp() {
         return MAX_HP;
     }
+
+    @Override
+    public void takeDamage(int damage) {
+        this.hp -= damage;
+    }
 }

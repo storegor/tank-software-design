@@ -23,4 +23,13 @@ public enum Direction {
     public float getRotation() {
         return rotation;
     }
+
+    public static Direction fromRotation(float rotation) {
+        for (Direction dir : Direction.values()) {
+            if (Math.abs(dir.rotation - rotation) < 0.01f) {
+                return dir;
+            }
+        }
+        return RIGHT;
+    }
 }

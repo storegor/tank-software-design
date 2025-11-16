@@ -42,4 +42,8 @@ public class PlayerGraphics extends AbstractGameObject implements GameUnitGraphi
     public Rectangle getRectangle() {
         return rectangle;
     }
+
+    @Override
+    public void dispose() {
+    }
 }

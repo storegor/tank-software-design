@@ -48,7 +48,7 @@ public class GameWorldFactory {
             aiTanks.add(aiTank);
         }
 
-        return new GameWorld(
+        GameWorld gameWorld = new GameWorld(
                 batch,
                 LEVEL_PATH,
                 GREEN_TREE_TEXTURE_PATH,
@@ -58,5 +58,9 @@ public class GameWorldFactory {
                 playerTank,
                 aiTanks,
                 healthBarDecorators);
+        
+        gameWorld.addSharedResource(blueTankTexture);
+        
+        return gameWorld;
     }
 }

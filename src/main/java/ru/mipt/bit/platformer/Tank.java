@@ -70,6 +70,10 @@ public class Tank implements GameObject, Disposable {
         return model;
     }
 
+    public AiTankController getAiTankController() {
+        return aiTankController;
+    }
+
     @Override
     public void dispose() {
         graphics.dispose();

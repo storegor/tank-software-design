@@ -20,6 +20,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     private Batch batch;
     private GameWorld gameWorld;
+    private GameScreen gameScreen;
 
     @Override
     public void create() {
@@ -53,7 +54,15 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         GameWorldFactory gameWorldFactory = new GameWorldFactory();
         gameWorld = gameWorldFactory.createGameWorld(batch, levelGenerator);
-        Gdx.input.setInputProcessor(gameWorld.getPlayerTank().getInputHandler());
+        
+        gameWorld.initializeAiControllers();
+        
+        gameScreen = new GameScreen();
+        gameWorld.addListener(gameScreen);
+        
+        KeyboardInputHandler inputHandler = (KeyboardInputHandler) gameWorld.getPlayerTank().getInputHandler();
+        inputHandler.setGameWorld(gameWorld);
+        Gdx.input.setInputProcessor(inputHandler);
     }
 
     @Override
@@ -65,6 +74,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         gameWorld.update(deltaTime);
         gameWorld.render(batch);
+        gameScreen.render(batch);
     }
 
     @Override
@@ -81,6 +91,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     @Override
     public void dispose() {
+        gameScreen.dispose();
         gameWorld.dispose();
         batch.dispose();
     }

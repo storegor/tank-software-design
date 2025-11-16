@@ -75,6 +75,9 @@ public class HealthBarGraphicsDecorator implements GameUnitGraphics {
     @Override
     public void dispose() {
         wrappee.dispose();
-        shapeRenderer.dispose();
+        try {
+            shapeRenderer.dispose();
+        } catch (IllegalArgumentException e) {
+        }
     }
 }

@@ -14,6 +14,7 @@ public interface GameUnitModel {
     float getMovementProgress();
     int getHp();
     int getMaxHp();
+    void takeDamage(int damage);
 }
 
 
