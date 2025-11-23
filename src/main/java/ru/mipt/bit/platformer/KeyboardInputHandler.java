@@ -8,7 +8,7 @@ public class KeyboardInputHandler implements InputHandler {
 
     private final CommandProcessor commandProcessor;
     private final GameUnitModel playerModel;
-    private final List<HealthBarGraphicsDecorator> decorators;
+    private List<HealthBarGraphicsDecorator> decorators;
     private GameWorld gameWorld;
 
     public KeyboardInputHandler(GameUnitModel playerModel, CommandProcessor commandProcessor, List<HealthBarGraphicsDecorator> decorators) {
@@ -19,6 +19,10 @@ public class KeyboardInputHandler implements InputHandler {
 
     public void setGameWorld(GameWorld gameWorld) {
         this.gameWorld = gameWorld;
+    }
+
+    public void setDecorators(List<HealthBarGraphicsDecorator> decorators) {
+        this.decorators = decorators;
     }
 
     @Override

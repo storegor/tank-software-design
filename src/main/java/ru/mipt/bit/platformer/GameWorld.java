@@ -16,6 +16,7 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRende
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
 public class GameWorld implements Disposable {
+    public final Batch batch;
     private final TiledMap level;
     private final MapRenderer levelRenderer;
     private final TiledMapTileLayer groundLayer;
@@ -31,17 +32,16 @@ public class GameWorld implements Disposable {
 
     public GameWorld(
             Batch batch,
-            String levelPath,
-            String greenTreeTexturePath,
-            float playerMovementSpeed,
+            TiledMap level,
             CollisionDetector collisionDetector,
-            LevelData levelData,
             PlayerTank playerTank,
             List<Tank> aiTanks,
+            List<Obstacle> obstacles,
             List<HealthBarGraphicsDecorator> healthBarDecorators) {
-        level = new TmxMapLoader().load(levelPath);
-        levelRenderer = createSingleLayerMapRenderer(level, batch);
-        groundLayer = getSingleLayer(level);
+        this.batch = batch;
+        this.level = level;
+        this.levelRenderer = createSingleLayerMapRenderer(level, batch);
+        this.groundLayer = getSingleLayer(level);
 
         this.playerTank = playerTank;
         this.aiTanks = aiTanks;
@@ -51,17 +51,9 @@ public class GameWorld implements Disposable {
         this.bullets = new ArrayList<>();
         this.sharedResources = new ArrayList<>();
 
+        this.obstacles = obstacles;
         gameObjects = new ArrayList<>();
-        obstacles = new ArrayList<>();
-
-        Texture greenTreeTexture = new Texture(greenTreeTexturePath);
-        for (GridPoint2 obstaclePos : levelData.getObstaclePositions()) {
-            ObstacleModel treeModel = new ObstacleModel(obstaclePos);
-            ObstacleGraphics treeGraphics = new ObstacleGraphics(greenTreeTexture, treeModel.getCoordinates(), groundLayer);
-            Obstacle treeObstacle = new Obstacle(treeModel, treeGraphics);
-            obstacles.add(treeObstacle);
-            gameObjects.add(treeObstacle);
-        }
+        gameObjects.addAll(obstacles);
 
         gameObjects.add(playerTank);
         gameObjects.addAll(aiTanks);

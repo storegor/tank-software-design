@@ -1,5 +1,6 @@
 def versions = [
-    gdx: '1.9.11'
+    gdx: '1.9.11',
+    spring: '5.3.23'
 ]
 
 def gdxDependencies = [
@@ -8,8 +9,13 @@ def gdxDependencies = [
     platform_desktop: "com.badlogicgames.gdx:gdx-platform:$versions.gdx:natives-desktop"
 ]
 
+def springDependencies = [
+    context: "org.springframework:spring-context:$versions.spring"
+]
+
 def deps = [
-    gdx: gdxDependencies
+    gdx: gdxDependencies,
+    spring: springDependencies
 ]
 
 ext.deps = deps
