@@ -1,12 +1,21 @@
-def versions = [:]
-versions.gdx = '1.9.11'
+def versions = [
+    gdx: '1.9.11',
+    spring: '5.3.23'
+]
 
-def deps = [:]
+def gdxDependencies = [
+    gdx: "com.badlogicgames.gdx:gdx:$versions.gdx",
+    backend_lwjgl3: "com.badlogicgames.gdx:gdx-backend-lwjgl3:$versions.gdx",
+    platform_desktop: "com.badlogicgames.gdx:gdx-platform:$versions.gdx:natives-desktop"
+]
 
-def gdx = [:]
-gdx.gdx = "com.badlogicgames.gdx:gdx:$versions.gdx"
-gdx.backend_lwjgl3 = "com.badlogicgames.gdx:gdx-backend-lwjgl3:$versions.gdx"
-gdx.platform_desktop = "com.badlogicgames.gdx:gdx-platform:$versions.gdx:natives-desktop"
-deps.gdx = gdx
+def springDependencies = [
+    context: "org.springframework:spring-context:$versions.spring"
+]
+
+def deps = [
+    gdx: gdxDependencies,
+    spring: springDependencies
+]
 
 ext.deps = deps
